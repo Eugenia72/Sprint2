@@ -1,4 +1,4 @@
-1.Escribe una consulta para mostrar todos los documentos en la colección Restaurantes 
+1. Escribe una consulta para mostrar todos los documentos en la colección Restaurantes 
 
 db.Restaurant.find();
 
