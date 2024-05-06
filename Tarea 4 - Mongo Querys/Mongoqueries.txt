@@ -1,0 +1,102 @@
+1.Escribe una consulta para mostrar todos los documentos en la colección Restaurantes 
+
+db.Restaurant.find();
+
+2. Escribe una consulta para mostrar el restaurant_id, name, borough y cuisine por todos los documentos en la colección
+
+db.Restaurant.find( {}, { 'restaurant_id': 1, 'name': 1, 'borough': 1, 'cuisine': 1 } );
+
+3. Escribe una consulta para mostrar el restaurant_id, name, borough y cuisine, pero excluye el campo _id por todos los documentos en la colección Restaurantes
+
+db.Restaurant.find( {}, { '_id': 0, 'restaurant_id': 1, 'name': 1, 'borough': 1, 'cuisine': 1 } );
+
+4. Escribe una consulta para mostrar restaurant_id, name, borough y zip code, pero excluye el campo _id por todos los documentos en la colección Restaurants.
+
+db.Restaurant.find( {}, { '_id': 0, 'restaurant_id': 1, 'name': 1, 'borough': 1, 'address.zipcode': 1 } );
+
+5.Escribe una consulta para mostrar todos los restaurantes que están en el Bronx.
+db.Restaurant.find( {}, { 'borough': 'Bronx'} );
+
+6. Escribe una consulta para mostrar los primeros 5 restaurantes que están en el Bronx.
+
+db.Restaurant.find( {}, { 'borough': 'Bronx'}, {limit: 5} );
+
+7. Escribe una consulta para mostrar el próximo 5 restaurantes después de saltar los primeros 5 del Bronx.
+
+db.Restaurant.find( {}, { 'borough': 'Bronx' } ).skip(5).limit(5);
+
+8. Escribe una consulta para encontrar los restaurantes que tienen un score de más de 90. 
+
+db.Restaurant.find( { 'grades.score': { $gt: 90 } } );
+
+9.Escribe una consulta para encontrar los restaurantes que tienen un score de más de 80 pero menos que 100.
+
+db.Restaurant.find( { 'grades': { $elemMatch: { score: { $gt: 80, $lt: 100 } } } } );
+
+10. Escribe una consulta para encontrar los restaurantes que se localizan en valor de latitud menos de -95.754168
+
+db.Restaurant.find( { 'address.coord.0': { $lt: -95.754168 } } );
+
+11. Escribe una consulta para encontrar los restaurantes que no preparan ningún cuisine de 'American' y su calificación es superior a 70 y longitud inferior a -65.754168.
+
+db.Restaurant.find( { $and: [ { 'cuisine': { $not: /American/ } }, { 'grades.score': { $gt: 70 } }, { 'address.coord.0': { $lt: -65.754168 } } ] } );
+
+12. Escribe una consulta para encontrar los restaurantes que no preparan ningún cuisine de 'American' y consiguieron un marcador más de 70 y localizado en la longitud menos que -65.754168. Nota: Haz esta consulta sin utilizar $and operador
+
+db.Restaurant.find({ cuisine: { $not: /American/ },'grades.score': { $gt: 70 },'address.coord.0': { $lt: -65.754168 } } );
+
+13. Escribe una consulta para encontrar los restaurantes que no preparan ningún cuisine de 'American' y obtuvieron un punto de grado 'A' no pertenece a Brooklyn. Se debe mostrar el documento según la cuisine en orden descendente.
+
+db.Restaurant.find({$and: [{ cuisine: { $ne: 'American '}}, { 'grades.grade': { $eq: 'A' }}, {borough: { $ne: 'Brooklyn' } } ] } ).sort({ cuisine: -1 } );
+
+14. Escribe una consulta para encontrar el restaurant_id, name, borough y cuisine para aquellos restaurantes que contienen 'Wil' como las tres primeras letras en su nombre
+
+db.Restaurant.find({ name: /^Wil/ }, { restaurant_id: 1, name: 1, borough: 1, cuisine: 1, _id: 0 } );
+
+15. Escribe una consulta para encontrar el restaurant_id, name, borough y cuisine para aquellos restaurantes que contienen 'ces' como las últimas tres letras en su nombre.
+
+db.Restaurant.find( { name: /ces$/ }, { restaurant_id: 1, name: 1, borough: 1, cuisine: 1, _id: 0 } );
+
+16. Escribe una consulta para encontrar el restaurant_id, name, borough y cuisine para aquellos restaurantes que contienen 'Reg' como tres letras en algún lugar en su nombre.
+
+db.Restaurant.find( { name: /Reg/ }, { restaurant_id: 1, name: 1, borough: 1, cuisine: 1, _id: 0 } );
+
+17. Escribe una consulta para encontrar los restaurantes que pertenecen al Bronx y preparan cualquier plato americano o chino
+
+db.Restaurant.find( {borough: 'Bronx', $or: [ { cuisine: 'American' },{ cuisine: 'Chinese' } ] } );
+
+18. Escribe una consulta para encontrar el restaurant_id, name, borough y cuisine para aquellos restaurantes que pertenecen a Staten Island o Queens o Bronx o Brooklyn.
+
+db.Restaurant.find( {$or: [ { borough: { $in: [ 'Staten Island', 'Queens', 'Bronx' , 'Brooklyn' ] } } ] }, { restaurant_id: 1, borough: 1, cuisine: 1 } );
+
+19. Escribe una consulta para encontrar el restaurant_id, name, borough y cuisine para aquellos restaurantes que no pertenecen a Staten Island o Queens o Bronx o Brooklyn.
+
+db.Restaurant.find( {$or: [ { borough: { $nin: [ 'Staten Island', 'Queens', 'Bronx' , 'Brooklyn' ] } } ] }, { restaurant_id: 1, borough: 1, cuisine: 1 } );
+
+20. Escribe una consulta para encontrar el restaurant_id, name, borough y cuisine para aquellos restaurantes que consigan un marcador que no es más de 10.
+
+db.Restaurant.find({ 'grades.score': { $lt: 10 } },{restaurant_id: 1, name: 1, borough: 1, cuisine: 1, _id: 0});
+
+21. Escribe una consulta para encontrar el restaurant_id, name, borough y cuisine para aquellos restaurantes que preparan seafood excepto 'American' y 'Chinese' o el name del restaurante empieza con letras 'Wil'.
+
+db.Restaurant.find( {$or:[ {cuisine:{ $nin:['American','Chinese'] },name:/^Wil/i},{cuisine:'Seafood'} ] },{restaurant_id: 1,name:1,borough: 1,cuisine: 1,_id:0})
+
+22. Escribe una consulta para encontrar el restaurant_id, name, y grades para aquellos restaurantes que consigan un grado "A" y un score 11 en datos de estudio ISODate "2014-08-11T00:00:00Z".
+
+db.Restaurant.find( {$and:[ {'grades.grade':'A'},{'grades.score':11},{'grades.date':{$eq:ISODate( '2014-08-11T00:00:00Z' ) } } ] }, {_id: 0, restaurant_id: 1, name: 1, grades: 1} );
+
+23. Escribe una consulta para encontrar el restaurant_id, name y gradas para aquellos restaurantes donde el 2º elemento de variedad de grados contiene un grado de "A" y marcador 9 sobre un ISODate "2014-08-11T00:00:00Z".
+
+db.Restaurant.find( { 'grades.grade':'A','grades.score': 9, 'grades.date': ISODate( '2014-08-11T00:00:00Z' ) }, {restaurant_id: 1, name: 1, _id: 0, grades: { $slice: [1, 1] } } );
+
+25. Escribe una consulta para organizar el nombre de los restaurantes en orden ascendente junto con todas las columnas.
+
+db.Restaurant.find().sort( {name: 1} );
+
+26. Escribe una consulta para organizar el nombre de los restaurantes en orden descendente junto con todas las columnas.
+
+db.Restaurant.find().sort( {name: -1} );
+
+27. Escribe una consulta para organizar el nombre en orden ascendente y por el mismo barrio de cuisine. Orden descendente.
+
+db.Restaurant.find().sort( {name: 1, borough:-1} );
